@@ -44,6 +44,22 @@ services:
     networks:
       - payment-gateway-network
 
+  # PHPMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: payment-gateway-mysql
+      PMA_USER: db_username
+      PMA_PASSWORD: db_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - mysql
+    networks:
+      - payment-gateway-network
+
 networks:
   payment-gateway-network:
 
