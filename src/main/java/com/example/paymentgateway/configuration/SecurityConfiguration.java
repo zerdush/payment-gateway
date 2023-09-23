@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -15,13 +17,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfiguration {
     @Bean
-    public UserDetailsService userDetailsService(){
-        User.UserBuilder users = User.withDefaultPasswordEncoder();
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
+        User.UserBuilder users = User.builder().passwordEncoder(passwordEncoder::encode);
 
-        UserDetails admin = users.username("james").password("bond").roles("ADMIN").build();
-        UserDetails user = users.username("user").password("pass").roles("USER").build();
+        UserDetails merchant1 = users.username("merch001").password("pass1").roles("USER").build();
+        UserDetails merchant2 = users.username("merch002").password("pass2").roles("USER").build();
 
-        return new InMemoryUserDetailsManager(admin, user);
+        return new InMemoryUserDetailsManager(merchant1, merchant2);
     }
 
     @Bean
@@ -29,5 +31,10 @@ public class SecurityConfiguration {
         http.httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

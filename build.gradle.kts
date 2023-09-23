@@ -25,6 +25,9 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.mockito:mockito-core:5.5.0")
+	testImplementation("com.h2database:h2:1.4.200")
+
 }
 
 tasks.withType<Test> {
