@@ -2,9 +2,11 @@ package com.example.paymentgateway.service;
 
 import com.example.paymentgateway.domain.PaymentRequest;
 import com.example.paymentgateway.repository.PaymentRequestRepo;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class PaymentRequestQuery {
     private final PaymentRequestRepo paymentRequestRepo;
 

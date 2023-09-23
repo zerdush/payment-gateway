@@ -4,9 +4,11 @@ import com.example.paymentgateway.domain.PaymentRequest;
 import com.example.paymentgateway.domain.PaymentResponse;
 import com.example.paymentgateway.domain.PaymentStatus;
 import com.example.paymentgateway.repository.PaymentRequestRepo;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class SendPaymentRequestCommand {
     private final AcquiringBank acquiringBank;
     private final PaymentRequestRepo paymentRequestRepo;
