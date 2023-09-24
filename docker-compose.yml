@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
 
-  # Payment Gateway
   payment-gateway:
     build:
       context: .
@@ -13,12 +12,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/payment_gateway_db
       SPRING_DATASOURCE_USERNAME: db_username
       SPRING_DATASOURCE_PASSWORD: db_password
+      ACQUIRING_BANK_URL: http://wiremock:8080/api/payment
     depends_on:
       - mysql
+      - wiremock
     networks:
       - payment-gateway-network
 
-  # MySQL Database
   mysql:
     image: mysql:8.0
     container_name: payment-gateway-mysql
@@ -40,11 +40,10 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./wiremock:/home/wiremock
+      - ./src/test/resources/wiremock:/home/wiremock
     networks:
       - payment-gateway-network
 
-  # PHPMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin

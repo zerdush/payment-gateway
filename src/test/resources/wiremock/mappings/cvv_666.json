@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/api/payment",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.cvv == '666')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "failed.json"
+  }
+}

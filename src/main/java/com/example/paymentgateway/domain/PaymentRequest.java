@@ -40,7 +40,7 @@ public class PaymentRequest {
     @Column(name = "status", length = 20, nullable = false)
     private PaymentStatus status;
 
-    @Column(name = "message", length = 255)
+    @Column(name = "message")
     private String message;
 
     public PaymentRequest() {
@@ -95,6 +95,10 @@ public class PaymentRequest {
         this.status = paymentStatus;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,6 +116,23 @@ public class PaymentRequest {
     public int hashCode() {
         return Objects.hash(id, merchantReferenceId, merchantId, creditCardNumber, expiryMonth,
                 expiryYear, amount, currency, cvv, status, message);
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentRequest{" +
+                "id='" + id + '\'' +
+                ", merchantReferenceId='" + merchantReferenceId + '\'' +
+                ", merchantId='" + merchantId + '\'' +
+                ", creditCardNumber='" + creditCardNumber + '\'' +
+                ", expiryMonth=" + expiryMonth +
+                ", expiryYear=" + expiryYear +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", cvv='" + cvv + '\'' +
+                ", status=" + status +
+                ", message='" + message + '\'' +
+                '}';
     }
 
     public static class Builder {

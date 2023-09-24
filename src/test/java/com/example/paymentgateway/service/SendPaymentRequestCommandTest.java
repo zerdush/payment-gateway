@@ -35,23 +35,9 @@ class SendPaymentRequestCommandTest {
 
     }
 
-    private static PaymentRequest createPaymentRequest() {
-        return new PaymentRequest.Builder()
-                .withId("123")
-                .withMerchantReferenceId("456")
-                .withMerchantId("789")
-                .withCreditCardNumber("1234567890123456")
-                .withExpiryMonth(12)
-                .withExpiryYear(2023)
-                .withAmount(new BigDecimal("100.00"))
-                .withCurrency("USD")
-                .withCvv("123")
-                .withStatus(PaymentStatus.REQUESTED)
-                .build();
-    }
-
     @Test
     void whenSendRequestThenSendItToAcquiringBank() {
+        when(acquiringBank.sendPaymentRequest(any())).thenReturn(createSuccessResponse());
         sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
         var acquiringBankPaymentRequest = new AcquiringBankPaymentRequest("1234567890123456", 12, 2023, "123",
@@ -62,18 +48,19 @@ class SendPaymentRequestCommandTest {
 
     @Test
     public void givenAcquiringBankResultIsSuccessThenSavePaymentRequestWithSuccess() {
-        when(acquiringBank.sendPaymentRequest(any())).thenReturn(AcquiringBankPaymentResult.SUCCESSFUL);
+        when(acquiringBank.sendPaymentRequest(any())).thenReturn(createSuccessResponse());
 
         sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
         var expectedPaymentRequest = createPaymentRequest();
         expectedPaymentRequest.setStatus(PaymentStatus.SUCCESSFUL);
+        expectedPaymentRequest.setMessage("some message");
         verify(paymentRequestRepo).save(expectedPaymentRequest);
     }
 
     @Test
     public void givenAcquiringBankResultIsSuccessThenReturnSuccess() {
-        when(acquiringBank.sendPaymentRequest(any())).thenReturn(AcquiringBankPaymentResult.SUCCESSFUL);
+        when(acquiringBank.sendPaymentRequest(any())).thenReturn(createSuccessResponse());
 
         PaymentResponse paymentResponse = sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
@@ -82,7 +69,7 @@ class SendPaymentRequestCommandTest {
 
     @Test
     public void givenAcquiringBankResultIsFailThenReturnFailed() {
-        when(acquiringBank.sendPaymentRequest(any())).thenReturn(AcquiringBankPaymentResult.FAILED);
+        when(acquiringBank.sendPaymentRequest(any())).thenReturn(createFailedResponse());
 
         PaymentResponse paymentResponse = sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
@@ -91,12 +78,13 @@ class SendPaymentRequestCommandTest {
 
     @Test
     public void givenAcquiringBankResultIsFailThenSavePaymentRequestWithFailed() {
-        when(acquiringBank.sendPaymentRequest(any())).thenReturn(AcquiringBankPaymentResult.FAILED);
+        when(acquiringBank.sendPaymentRequest(any())).thenReturn(createFailedResponse());
 
         sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
         var expectedPaymentRequest = createPaymentRequest();
         expectedPaymentRequest.setStatus(PaymentStatus.FAILED);
+        expectedPaymentRequest.setMessage("some message");
         verify(paymentRequestRepo).save(eq(expectedPaymentRequest));
     }
 
@@ -122,5 +110,28 @@ class SendPaymentRequestCommandTest {
         PaymentResponse paymentResponse = sendPaymentRequestCommand.sendPaymentRequest(paymentRequest);
 
         assertEquals(PaymentResponse.DUPLICATED, paymentResponse);
+    }
+
+    private static AcquiringBankResponse createSuccessResponse() {
+        return new AcquiringBankResponse(AcquiringBankPaymentResult.SUCCESSFUL, "some message");
+    }
+
+    private static AcquiringBankResponse createFailedResponse() {
+        return new AcquiringBankResponse(AcquiringBankPaymentResult.FAILED, "some message");
+    }
+
+    private static PaymentRequest createPaymentRequest() {
+        return new PaymentRequest.Builder()
+                .withId("123")
+                .withMerchantReferenceId("456")
+                .withMerchantId("789")
+                .withCreditCardNumber("1234567890123456")
+                .withExpiryMonth(12)
+                .withExpiryYear(2023)
+                .withAmount(new BigDecimal("100.00"))
+                .withCurrency("USD")
+                .withCvv("123")
+                .withStatus(PaymentStatus.REQUESTED)
+                .build();
     }
 }

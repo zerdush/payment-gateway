@@ -36,12 +36,14 @@ public class SendPaymentRequestCommand {
                 .build();
 
         PaymentResponse paymentResponse = PaymentResponse.SUCCESSFUL;
-        if(acquiringBank.sendPaymentRequest(request) == AcquiringBankPaymentResult.SUCCESSFUL) {
+        AcquiringBankResponse response = acquiringBank.sendPaymentRequest(request);
+        if(response.result() == AcquiringBankPaymentResult.SUCCESSFUL) {
             paymentRequest.setStatus(PaymentStatus.SUCCESSFUL);
         } else {
             paymentResponse = PaymentResponse.FAILED;
             paymentRequest.setStatus(PaymentStatus.FAILED);
         }
+        paymentRequest.setMessage(response.message());
         paymentRequestRepo.save(paymentRequest);
 
         return paymentResponse;
